@@ -1,0 +1,18 @@
+{
+  "name": "pixitest",
+  "version": "1.0.0",
+  "scripts": {
+    "run": "npx parcel src/index.html"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "pixi.js": "^7.3.2",
+    "tweedle.js": "^2.1.0"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.5",
+    "typescript": "^5.2.2"
+  }
+}
