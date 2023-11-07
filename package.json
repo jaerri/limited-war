@@ -9,6 +9,7 @@
   "repository": {
     "url": "https://github.com/jaerri/limited-war"
   },
+  "homepage": "https://jaerri.github.io/limited-war/",
   "dependencies": {
     "pixi.js": "^7.3.2",
     "tweedle.js": "^2.1.0"
