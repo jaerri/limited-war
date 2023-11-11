@@ -18,12 +18,14 @@ app.stage.addChild(bg);
 
 let unit = new Unit();
 
-for (let i=0; i<50; i++) {
+for (let i=0; i<1; i++) {
     let soldier = new Entity(
         new PIXI.Graphics()
-        .lineStyle(2, 0xFF0000)
+        .lineStyle(2, 0xFFFFFF)
         .drawRect(0, 0, 20, 20)
-    );
+        .moveTo(10, 0)
+        .lineTo(10, -5)
+    ).setPivotMiddle();
     unit.soldiers.push(soldier);
     app.stage.addChild(soldier.obj);
 }
@@ -50,15 +52,17 @@ function removeSol() {
 function addSol() {
     let soldier = new Entity(
         new PIXI.Graphics()
-        .lineStyle(2, 0xFF0000)
+        .lineStyle(2, 0xFFFFFF)
         .drawRect(0, 0, 20, 20)
-    );
+        .moveTo(10, 0)
+        .lineTo(10, -5)
+    ).setPivotMiddle();
     unit.soldiers.push(soldier);
     app.stage.addChild(soldier.obj);
 }
 function disperse() {
     for (let sol of unit.soldiers) {
-        sol.mover.move(app.view.width*Math.random(), app.view.height*Math.random());
+        sol.mover.move(new Point(app.view.width*Math.random(), app.view.height*Math.random()));
     }
 }
 (window as any).removeSol = removeSol;
