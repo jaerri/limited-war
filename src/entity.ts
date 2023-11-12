@@ -1,5 +1,6 @@
-import { Application, Container, DisplayObject, Graphics, ICanvas, IPoint, Point, RAD_TO_DEG } from "pixi.js";
+import { Container, Graphics, Point } from "pixi.js";
 import * as TWEEN from "tweedle.js";
+import { Sound, sound } from "@pixi/sound";
 
 export class Entity {
     health: number;
@@ -20,7 +21,33 @@ export class Entity {
 }
 
 export class Soldier extends Entity {
-    
+    weapon: Weapon
+
+    constructor(_obj: Container) {
+        super(_obj);
+        this.weapon = new Weapon(this);
+    }
+}
+
+export class Weapon {
+    obj: Container;
+    constructor(holder: Entity) {
+        let gun = new Graphics()
+            .lineStyle(4, 0x362312)
+            .lineTo(0, -17)
+            .lineStyle(2, 0x362312)
+            .lineTo(0, -20);
+        this.obj = gun;
+        holder.obj.addChild(gun);
+        gun.position = new Point(16, 7);
+    }
+    fire(target: Point) {
+        let vec = new Vector(target.x, target.y).subtract(this.obj.getGlobalPosition());
+        this.obj.rotation = vec.dir + Math.PI/2 + this.obj.parent.rotation;
+
+        let boom = Sound.from("static/vine-boom.mp3");
+        boom.play();
+    }
 }
 
 export class Unit extends Container {
@@ -33,6 +60,14 @@ export class Unit extends Container {
         super();
         this.soldiers = [];
     }
+    fire(pos: Point) {
+        setTimeout(()=>{}, 500);
+        for (let sol of this.soldiers) {
+            let rand = Math.random()*1000;
+            setTimeout(() => sol.weapon.fire(pos), rand)
+        }
+    }
+
     moveFormation(p1: Point, p2: Point) {
         let x_spacing = this.soldiers[0].obj.width + this.spacing;
         let y_spacing = this.soldiers[0].obj.height + this.spacing; 
@@ -82,7 +117,7 @@ export class MovementComponent {
     }
 
     move(pos: Point): TWEEN.Tween<Point> {
-        let vec = new Vector(pos.x, pos.y).subtract(this.obj.position);
+        let vec = new Vector(pos.x, pos.y).subtract(this.obj.getGlobalPosition());
         this.obj.rotation = vec.dir + Math.PI/2;
         
         return this.movePos(pos);
@@ -130,7 +165,7 @@ export class Vector extends Point {
     get dir(): number {
         return Math.atan2(this.y, this.x);
     }
-    dot(vec: Vector): number {
+    dot(vec: Point): number {
         return this.x * vec.x + this.y * vec.y;
     }
     normalize(): Vector {
@@ -140,12 +175,12 @@ export class Vector extends Point {
         return this
     }
 
-    add(vec: Vector | Point): Vector {
+    add(vec: Point): Vector {
         this.x += vec.x;
         this.y += vec.y;
         return this;
     }
-    subtract(vec: Vector | Point): Vector {
+    subtract(vec: Point): Vector {
         this.x -= vec.x;
         this.y -= vec.y;
         return this;

@@ -1,7 +1,8 @@
 import * as PIXI from "pixi.js";
 import { Point, FederatedPointerEvent } from "pixi.js";
 import * as TWEEN from "tweedle.js";
-import { Entity, Unit } from "./entity";
+import { Entity, Soldier, Unit } from "./entity";
+import { Scene } from "./player";
 
 const app = new PIXI.Application<HTMLCanvasElement>({
     autoDensity: true,
@@ -9,17 +10,13 @@ const app = new PIXI.Application<HTMLCanvasElement>({
     height: 360
 });
 document.body.insertBefore(app.view, document.body.firstChild?.nextSibling as ChildNode | null);
-let bg = new PIXI.Sprite(PIXI.Texture.WHITE)
-bg.width = app.screen.width;
-bg.height = app.screen.height;
-bg.eventMode = 'dynamic';
-bg.tint = "0x000000";
-app.stage.addChild(bg);
+let scene = new Scene(app);
+app.stage.addChild(scene.baseObj);
 
 let unit = new Unit();
 
 for (let i=0; i<1; i++) {
-    let soldier = new Entity(
+    let soldier = new Soldier(
         new PIXI.Graphics()
         .lineStyle(2, 0xFFFFFF)
         .drawRect(0, 0, 20, 20)
@@ -31,13 +28,22 @@ for (let i=0; i<1; i++) {
 }
 
 let p1: Point | null;
-bg.on("pointerdown", (e: FederatedPointerEvent) => {
+scene.baseObj.on("pointerdown", (e: FederatedPointerEvent) => {
+    e.preventDefault();
+    if (!(e.button === 2)) return;
     p1 = e.global.clone();
 });
-bg.on("pointerup", (e: FederatedPointerEvent) => {
-    if (p1 === null) return;
+scene.baseObj.on("pointerup", (e: FederatedPointerEvent) => {
+    e.preventDefault();
+    if (p1 === null || !(e.button === 2)) return;
     unit.moveFormation(p1, e.global);
     p1 = null;
+});
+
+scene.baseObj.on("pointerdown", (e: FederatedPointerEvent) => {
+    e.preventDefault();
+    if (!(e.button === 0)) return;
+    unit.fire(e.global.clone());
 });
 
 app.ticker.add((dt) => {
@@ -50,7 +56,7 @@ function removeSol() {
     unit.soldiers.splice(random, 1);
 }
 function addSol() {
-    let soldier = new Entity(
+    let soldier = new Soldier(
         new PIXI.Graphics()
         .lineStyle(2, 0xFFFFFF)
         .drawRect(0, 0, 20, 20)
