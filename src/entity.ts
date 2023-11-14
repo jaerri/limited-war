@@ -43,7 +43,7 @@ export class Weapon {
     }
     fire(target: Point) {
         let vec = new Vector(target.x, target.y).subtract(this.obj.getGlobalPosition());
-        this.obj.rotation = vec.dir + Math.PI/2 + this.obj.parent.rotation;
+        this.obj.rotation = vec.dir + Math.PI/2 - this.obj.parent.rotation;
 
         let boom = Sound.from("static/vine-boom.mp3");
         boom.play();
